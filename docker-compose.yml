@@ -2,15 +2,26 @@ services:
   postgres:
     image: postgres:16
     container_name: employee-postgres
+
     environment:
       POSTGRES_DB: employee_db
       POSTGRES_USER: employee_admin
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
     ports:
       - "5432:5432"
+
     volumes:
       - employee_pgdata:/var/lib/postgresql/data
+
     restart: unless-stopped
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U employee_admin -d employee_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
 volumes:
   employee_pgdata:
